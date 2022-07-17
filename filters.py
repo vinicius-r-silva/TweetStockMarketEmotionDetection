@@ -1,5 +1,6 @@
 import json
 import emoji
+import spacy
 from spacy.lang.pt.stop_words import STOP_WORDS
 import numpy as np
 
@@ -14,14 +15,18 @@ import numpy as np
         - maiúsculas
 '''
 
-# with open("stopwords.txt") as sw:
-#     stopwords = json.load(sw)
-# stopwords = stopwords["words"]
+acoes = []
+with open("acoes.txt") as sw:
+    acao = json.load(sw)
+    acoes = acao["acoes"]
+    
+
+nlp = spacy.load("pt_core_news_sm")
 stopwords = STOP_WORDS
 
 
 def filter_symbols(word):
-    extras = [',','.',':','\'','"','-','¡','¿','#','?','!','(',')','»','«',';','%','{','}','[',']','$','&','/','=',
+    extras = [',','.',':','\'','"','-','¡','¿','#','?','!','(',')','»','«',';','%','{','}','[',']','&','/','=',
               '…','+','-','*','_','^','`','|','°','”','✅','‘','“','⁦','—','⏩','⚠️','✌','➡️','♫','♩','❤','▶','√','🤷‍♀️'
               '🆘','´','`']
 
@@ -47,7 +52,6 @@ def normalize(s):
     return s
 
 def filter_file(file):
-    #stemmer = SnowballStemmer('spanish')
 
     tweet = [word.lower() for word in file.split()]
 
@@ -57,6 +61,15 @@ def filter_file(file):
     #Filtramos los websites
     tweet = [word for word in tweet if not word.startswith("http") and not word.startswith("@")
              and len(word)]
+
+    #Filtramos los cashtag
+    tweet = [word for word in tweet if not word.startswith("$") and len(word)]
+
+    #Filtramos los valores monetarios
+    tweet = [word for word in tweet if not word.startswith("r$") and len(word)]
+
+    #Filtramos as ações
+    tweet = [word for word in tweet if word not in acoes and len(word)]
 
     #Filtramos los stopwords
     #tweets = [stemmer.stem(word) for word in tweet if word not in stopwords]
@@ -87,6 +100,8 @@ for setence in setencesTrain:
 
 TrainX = np.array(result)
 
+print(type(TrainX))
+print(len(TrainX))
 print(TrainX)
 # print(TestX)
 np.save('preprocessed/testX', TestX)
