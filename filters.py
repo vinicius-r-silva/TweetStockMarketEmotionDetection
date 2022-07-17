@@ -37,6 +37,10 @@ def normalize(s):
         ("í", "i"),
         ("ó", "o"),
         ("ú", "u"),
+        ("ã", "a"),
+        ("õ", "o"),
+        ("ê", "e"),
+        ("ç", "c"),
     )
     for a, b in replacements:
         s = s.replace(a, b).replace(a.upper(), b.upper())
@@ -84,6 +88,6 @@ for setence in setencesTrain:
 TrainX = np.array(result)
 
 print(TrainX)
-print(TestX)
+# print(TestX)
 np.save('preprocessed/testX', TestX)
 np.save('preprocessed/trainX', TrainX)
