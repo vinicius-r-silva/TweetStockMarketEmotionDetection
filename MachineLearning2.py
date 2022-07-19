@@ -9,7 +9,8 @@ from keras.callbacks import EarlyStopping
 from keras.layers import Dropout
 import os
 from sklearn.metrics import accuracy_score
-from confussion_matrix import get_confussion_matrixes
+from sklearn.metrics import multilabel_confusion_matrix
+
 os.environ['CUDA_VISIBLE_DEVICES'] = "0"
 
 #Abrir arquivos de treino e teste
@@ -76,15 +77,15 @@ def test_model(model,X_test,y_test):
 model = train_model(X_train,Y_train,'mlp')
 results = test_model(model,X_test,Y_test)
 print('Acurácia: ', accuracy_score(Y_test, results, normalize=True), '%')
-print(get_confussion_matrixes(Y_test,results))
+print(multilabel_confusion_matrix(Y_test,results))
 
 model = train_model(X_train,Y_train,'MultiOutput_Logistic')
 results = test_model(model,X_test,Y_test)
 print('Acurácia: ', accuracy_score(Y_test, results, normalize=True), '%')
-print(get_confussion_matrixes(Y_test,results))
+print(multilabel_confusion_matrix(Y_test,results))
 
 model = train_model(X_train,Y_train,'MultiOutput_SGDC')
 results = test_model(model,X_test,Y_test)
 print('Acurácia: ', accuracy_score(Y_test, results, normalize=True), '%')
-print(get_confussion_matrixes(Y_test,results))
+print(multilabel_confusion_matrix(Y_test,results))
 
