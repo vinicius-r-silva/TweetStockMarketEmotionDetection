@@ -4,6 +4,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import multilabel_confusion_matrix
+from sklearn.metrics import classification_report
+
+import matplotlib.pyplot as plt
 
 def TFIDF(X_train, X_test):
     """
@@ -65,46 +69,12 @@ print(tfidf_reversed_vocab)
 #Treinamento
 classifier_tfidf = train_classifier(X_train_tfidf, Y_train, C = 4, regularisation = 'l2')
 
-y_predicted_labels_tfidf = classifier_tfidf.predict(X_test_tfidf)
+Y_predicted = classifier_tfidf.predict(X_test_tfidf)
 y_val_predicted_scores_tfidf = classifier_tfidf.decision_function(X_test_tfidf)
 
-print('Acurácia: ', accuracy_score(Y_test, y_predicted_labels_tfidf, normalize=False), '%')
+print('Acurácia: ', accuracy_score(Y_test, Y_predicted, normalize=False), '%')
+print(classification_report(Y_test, Y_predicted, target_names=emotionLabels))
 
-# TF_matrix = {}
-# for emotion in emotionLabels:
-#     TF_matrix[emotion] = {}
+print(multilabel_confusion_matrix(Y_test, Y_predicted))
 
-# for rowIdx in range(len(X_train)):
-#     words = X_train[rowIdx].split()
-#     emotions = getEmotion(Y_train[rowIdx], emotionLabels)
-#     for word in words:
-#         addCounter(TF_matrix, emotions, word)
-
-# # TF_matrix['JOY']['termo']
-# termEmotionMatrix = {}
-
-# #IDF = log10(N/df(t))
-# for emotion in TF_matrix:
-#     for word in TF_matrix[emotion]:
-#         termEmotionMatrix[word] = {}
-#         for emotion in TF_matrix:
-#             termEmotionMatrix[word][emotion] = TF_matrix[emotion][word]
-
-# IDF_matrix = {}
-
-# for word in termEmotionMatrix:
-#     IDF=0
-#     for emotion in termEmotionMatrix[word]:
-#         if termEmotionMatrix[word][emotion]!=0:
-#             IDF+=1
-    
-#     IDF_matrix[word]=np.log(len(emotionLabels)/IDF)
-
-# for emotion in TF_matrix:
-#     for word in TF_matrix[emotion]:
-#         TF_matrix[emotion][word] += 1
-#         TF_matrix[emotion][word] = math.log10(TF_matrix[emotion][word])
-
-
-
-#print(TF_matrix)
+print(Y_test)
