@@ -4,6 +4,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
+from confussion_matrix import get_confussion_matrixes
 
 def TFIDF(X_train, X_test):
     """
@@ -68,7 +69,8 @@ classifier_tfidf = train_classifier(X_train_tfidf, Y_train, C = 4, regularisatio
 y_predicted_labels_tfidf = classifier_tfidf.predict(X_test_tfidf)
 y_val_predicted_scores_tfidf = classifier_tfidf.decision_function(X_test_tfidf)
 
-print('Acurácia: ', accuracy_score(Y_test, y_predicted_labels_tfidf, normalize=False), '%')
+print('Acurácia: ', accuracy_score(Y_test, y_predicted_labels_tfidf, normalize=True), '%')
+print(get_confussion_matrixes(Y_test,y_predicted_labels_tfidf))
 
 # TF_matrix = {}
 # for emotion in emotionLabels:

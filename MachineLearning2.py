@@ -1,17 +1,15 @@
 import numpy as np
 from sklearn.multioutput import MultiOutputClassifier
-from sklearn.linear_model import LogisticRegression, Perceptron, Lasso, SGDClassifier
+from sklearn.linear_model import LogisticRegression, SGDClassifier
 # mlp for multi-label classification
-from numpy import mean
-from numpy import std
-from sklearn.datasets import make_multilabel_classification
-from sklearn.model_selection import RepeatedKFold
 from keras.models import Sequential
 from keras.layers import Dense
 from sklearn.metrics import accuracy_score
 from keras.callbacks import EarlyStopping
 from keras.layers import Dropout
 import os
+from sklearn.metrics import accuracy_score
+from confussion_matrix import get_confussion_matrixes
 os.environ['CUDA_VISIBLE_DEVICES'] = "0"
 
 #Abrir arquivos de treino e teste
@@ -73,45 +71,20 @@ def test_model(model,X_test,y_test):
 			else:
 				results_table[i][1] += 1
 	print(results_table)
-
-# evaluate a model using repeated k-fold cross-validation
-def evaluate_model(X, y):
-	results = list()
-	n_inputs, n_outputs = X.shape[1], y.shape[1]
-	# define evaluation procedure
-	cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
-	# enumerate folds
-	for train_ix, test_ix in cv.split(X):
-		# prepare data
-		X_train, X_test = X[train_ix], X[test_ix]
-		y_train, y_test = y[train_ix], y[test_ix]
-		# define model
-		model = get_model(n_inputs, n_outputs)
-		# fit model
-		model.fit(X_train, y_train, verbose=0, epochs=40)
-		# make a prediction on the test set
-		yhat = model.predict(X_test)
-		# round probabilities to class labels
-		yhat = yhat.round()
-		# calculate accuracy
-		acc = accuracy_score(y_test, yhat)
-		# store result
-		print('>%.3f' % acc)
-		results.append(acc)
 	return results
- 
-print(X_train.shape)
-
-# load dataset
-# evaluate model
-#results = evaluate_model(X_train, Y_train)
-# summarize performance
-#print('Accuracy: %.3f (%.3f)' % (mean(results), std(results)))
 
 model = train_model(X_train,Y_train,'mlp')
-test_model(model,X_test,Y_test)
+results = test_model(model,X_test,Y_test)
+print('Acurácia: ', accuracy_score(Y_test, results, normalize=True), '%')
+print(get_confussion_matrixes(Y_test,results))
+
 model = train_model(X_train,Y_train,'MultiOutput_Logistic')
-test_model(model,X_test,Y_test)
+results = test_model(model,X_test,Y_test)
+print('Acurácia: ', accuracy_score(Y_test, results, normalize=True), '%')
+print(get_confussion_matrixes(Y_test,results))
+
 model = train_model(X_train,Y_train,'MultiOutput_SGDC')
-test_model(model,X_test,Y_test)
+results = test_model(model,X_test,Y_test)
+print('Acurácia: ', accuracy_score(Y_test, results, normalize=True), '%')
+print(get_confussion_matrixes(Y_test,results))
 
