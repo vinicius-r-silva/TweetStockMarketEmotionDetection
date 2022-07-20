@@ -5,7 +5,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import multilabel_confusion_matrix
 from sklearn.metrics import classification_report
-from pprint import pprint
 
 from sklearn.svm import SVC
 
@@ -16,7 +15,7 @@ def TFIDF(X_train, X_test):
     # Transform the train, test set and return the result
     
     
-    tfidf_vectorizer = TfidfVectorizer(ngram_range=(1,3), max_df=0.9, min_df=5)
+    tfidf_vectorizer = TfidfVectorizer(ngram_range=(1,2), max_df=0.9, min_df=5)
 
     X_train_tfidf = tfidf_vectorizer.fit_transform(X_train)
     X_test_tfidf = tfidf_vectorizer.transform(X_test)
@@ -76,18 +75,24 @@ Y_train = np.load('./preprocessed/trainY.npy')
 
 X_train_tfidf, X_test_tfidf, tfidf_vocab = TFIDF(X_train, X_test)
 tfidf_reversed_vocab = {i:word for word,i in tfidf_vocab.items()}
-pprint(tfidf_reversed_vocab)
-print(len(tfidf_reversed_vocab))
-print(type(tfidf_reversed_vocab))
+print(tfidf_reversed_vocab)
 
 #Treinamento
 classifier_tfidf = train_classifier(X_train_tfidf, Y_train, C = 10, regularisation = 'l2')
 
 Y_predicted = classifier_tfidf.predict(X_test_tfidf)
-y_val_predicted_scores_tfidf = classifier_tfidf.decision_function(X_test_tfidf)
+Y_predicted = np.zeros((334,9), dtype=int)
+Y_predicted[:,8] = 1
+# print(Y_predicted)
+# print(type(Y_predicted))
+# print(len(Y_predicted))
+# print(Y_predicted.dtype)
+# print(Y_predicted.shape)
+# print(Y_predicted.dtype)
+# y_val_predicted_scores_tfidf = classifier_tfidf.decision_function(X_test_tfidf)
 
 print('Acurácia: ', 100*accuracy_score(Y_test, Y_predicted, normalize=True), '%')
 print('Hamming score: {0}%'.format(100*hamming_score(Y_test, Y_predicted)))
-print(classification_report(Y_test, Y_predicted, target_names=emotionLabels, zero_division=1))
+print(classification_report(Y_test, Y_predicted, target_names=emotionLabels, zero_division=0))
 
 print(multilabel_confusion_matrix(Y_test, Y_predicted))
